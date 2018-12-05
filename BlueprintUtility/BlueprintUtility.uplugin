@@ -1,0 +1,25 @@
+{
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "1.0",
+  "FriendlyName": "BlueprintUtility",
+  "Description": "",
+  "Category": "Other",
+  "CreatedBy": "ECG",
+  "CreatedByURL": "",
+  "DocsURL": "",
+  "MarketplaceURL": "",
+  "SupportURL": "",
+  "CanContainContent": true,
+  "IsBetaVersion": false,
+  "Installed": false,
+  "EnabledByDefault": true,
+  "SupportedTargetPlatforms": [ "Win64" ],
+  "Modules": [
+    {
+      "Name": "BlueprintUtility",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    }
+  ]
+}
