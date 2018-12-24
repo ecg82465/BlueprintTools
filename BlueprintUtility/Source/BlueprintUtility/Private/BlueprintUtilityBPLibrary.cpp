@@ -9,7 +9,10 @@
 #include "IImageWrapper.h"
 #include "IImageWrapperModule.h"
 
+//#include "ImageLoader.h"
+
 #include "Engine/Texture2D.h"
+
 
 
 UBlueprintUtilityBPLibrary::UBlueprintUtilityBPLibrary(const FObjectInitializer& ObjectInitializer)
@@ -48,7 +51,7 @@ float UBlueprintUtilityBPLibrary::BlueprintUtilitySampleFunction(float Param)
 //Discern Texture Type
 static TSharedPtr<IImageWrapper> GetImageWrapperByExtention(const FString InImagePath)
 {
-	IImageWrapperModule& ImageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>(FName("ImageWrapper"));
+	IImageWrapperModule& ImageWrapperModule = FModuleManager::GetModuleChecked<IImageWrapperModule>(FName("ImageWrapper"));
 	
 
 
@@ -85,6 +88,12 @@ UTexture2D* UBlueprintUtilityBPLibrary::LoadTexture2DFromFile(const FString& Fil
 {
 
 	FString FullFilePath = GetFullPath(FilePath);
+
+	if (!IsVaildPath(FullFilePath))
+	{
+		return NULL;
+	}
+	
 
 	IsValid = false;
 	UTexture2D* LoadedT2D = NULL;
@@ -133,6 +142,14 @@ UTexture2D* UBlueprintUtilityBPLibrary::LoadTexture2DFromFile(const FString& Fil
 	//return NULL;
 }
 
+
+UImageLoader* UBlueprintUtilityBPLibrary::LoadTexture2DFromFile_Async(UObject* Outer, const FString& FilePath)
+{
+	UImageLoader* Loader = NewObject<UImageLoader>();
+	Loader->LoadImageAsync(Outer,FilePath);
+
+	return Loader;
+}
 
 
 
@@ -269,7 +286,6 @@ bool UBlueprintUtilityBPLibrary::ReadCustomPathConfig(const FString&FilePath, co
 	}
 
 
-
 	GConfig->SetString(*SectionName, *ValueName, *WriteString, FullPath);
 
 	GConfig->Flush(false, FullPath);
@@ -323,8 +339,105 @@ bool UBlueprintUtilityBPLibrary::ReadCustomPathConfig(const FString&FilePath, co
  {
 	 if (E == DirType::GameDir)
 	 {
-		 return FPaths::GameDir();
+		 return FPaths::ProjectDir();
 	 }
-	 return FPaths::GameContentDir();
+	 return FPaths::ProjectContentDir();
 
+ }
+
+
+ bool UBlueprintUtilityBPLibrary::IsVaildPath(const FString ImagePath)
+ {
+
+	 if (!FPaths::FileExists(ImagePath))
+	 {
+		 UE_LOG(LogTemp, Warning, TEXT("File not found: %s"), *ImagePath);
+		 return false;
+	 }
+
+	 // Load the compressed byte data from the file
+	 TArray<uint8> FileData;
+	 if (!FFileHelper::LoadFileToArray(FileData, *ImagePath))
+	 {
+		 UE_LOG(LogTemp, Warning, TEXT("Failed to load file: %s"), *ImagePath);
+		 return false;
+	 }
+
+	 return true;
+ }
+
+
+ void UBlueprintUtilityBPLibrary::String__ExplodeString(TArray<FString>& OutputStrings, FString InputString, FString Separator, int32 limit, bool bTrimElements)
+ {
+	 OutputStrings.Empty();
+	 //~~~~~~~~~~~
+
+	 if (InputString.Len() > 0 && Separator.Len() > 0) {
+		 int32 StringIndex = 0;
+		 int32 SeparatorIndex = 0;
+
+		 FString Section = "";
+		 FString Extra = "";
+
+		 int32 PartialMatchStart = -1;
+
+		 while (StringIndex < InputString.Len()) {
+
+			 if (InputString[StringIndex] == Separator[SeparatorIndex]) {
+				 if (SeparatorIndex == 0) {
+					 //A new partial match has started.
+					 PartialMatchStart = StringIndex;
+				 }
+				 Extra.AppendChar(InputString[StringIndex]);
+				 if (SeparatorIndex == (Separator.Len() - 1)) {
+					 //We have matched the entire separator.
+					 SeparatorIndex = 0;
+					 PartialMatchStart = -1;
+					 if (bTrimElements == true) {
+						 OutputStrings.Add(FString(Section).Trim().TrimTrailing());
+					 }
+					 else {
+						 OutputStrings.Add(FString(Section));
+					 }
+
+					 //if we have reached the limit, stop.
+					 if (limit > 0 && OutputStrings.Num() >= limit)
+					 {
+						 return;
+						 //~~~~
+					 }
+
+					 Extra.Empty();
+					 Section.Empty();
+				 }
+				 else {
+					 ++SeparatorIndex;
+				 }
+			 }
+			 else {
+				 //Not matched.
+				 //We should revert back to PartialMatchStart+1 (if there was a partial match) and clear away extra.
+				 if (PartialMatchStart >= 0) {
+					 StringIndex = PartialMatchStart;
+					 PartialMatchStart = -1;
+					 Extra.Empty();
+					 SeparatorIndex = 0;
+				 }
+				 Section.AppendChar(InputString[StringIndex]);
+			 }
+
+			 ++StringIndex;
+		 }
+
+		 //If there is anything left in Section or Extra. They should be added as a new entry.
+		 if (bTrimElements == true) {
+			 OutputStrings.Add(FString(Section + Extra).Trim().TrimTrailing());
+		 }
+		 else {
+			 OutputStrings.Add(FString(Section + Extra));
+		 }
+
+		 Section.Empty();
+		 Extra.Empty();
+	 }
  }

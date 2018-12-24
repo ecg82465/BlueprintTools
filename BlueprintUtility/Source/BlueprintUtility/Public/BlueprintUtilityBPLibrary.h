@@ -6,6 +6,9 @@
 #include "Core.h"
 #include "Engine.h"
 
+//LoadImageAsync
+#include "ImageLoader.h"
+
 #include "Kismet/BlueprintFunctionLibrary.h"
 
 #include "Runtime/Engine/Classes/Sound/SoundWave.h"
@@ -60,46 +63,56 @@ class UBlueprintUtilityBPLibrary : public UBlueprintFunctionLibrary
 
 	static FString GetFullPath(FString FilePath);
 
-	/** Load a Texture2D from a file!  */
-	UFUNCTION(BlueprintPure, Category = "BlueprintUtility", meta = (Keywords = "image png jpg jpeg bmp bitmap ico icon exr icns"))
+	/** Load Texture2D */
+	UFUNCTION(BlueprintPure, Category = "BlueprintUtility|Loader", meta = (Keywords = "image png jpg jpeg bmp bitmap ico icon exr icns"))
 	static UTexture2D* LoadTexture2DFromFile(const FString& FilePath, bool& IsValid, int32& Width, int32& Height);
 
+	/** Load Texture2D No Blocking Game Logic */
+	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|Loader", meta = (Keywords = "image png jpg jpeg bmp bitmap ico icon exr icns"))
+	static UImageLoader* LoadTexture2DFromFile_Async(UObject* Outer, const FString& FilePath);
+
 	/** Load a Sound from a file!  */
-	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility", meta = (Keywords = ""))
+	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|Loader", meta = (Keywords = ""))
 	static class USoundWave* LoadSoundWaveFromFile(const FString& FilePath);
 
 
-	/** Read Engine Config */
-	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility", meta = (Keywords = ""))
+	/**  Config !! */
+	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|Config", meta = (Keywords = ""))
 	static void ReadConfig(const FString& SectionName,const FString& ValueName, FString &ReturnValue);
 
-	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility", meta = (Keywords = ""))
+	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|Config", meta = (Keywords = ""))
 	static void WriteConfig(const FString& SectionName, const FString& ValueName, const FString &ReturnValue);
 
-
-	/** Read Path Config */
-	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility", meta = (Keywords = ""))
+	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|Config", meta = (Keywords = ""))
 	static bool ReadCustomPathConfig(const FString&FilePath,const FString& SectionName, const FString& ValueName, FString &ReturnString);
 
-	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility", meta = (Keywords = ""))
+	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|Config", meta = (Keywords = ""))
 	static void WriteCustomPathConfig(const FString&FilePath, const FString& SectionName, const FString& ValueName,const FString &WriteString);
 
+	
 	/** RefrashAllSkeletal Trnasfrom In This Frame (Fix Animation Dither Error)*/
-	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility", meta = (Keywords = ""))
+
+	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|Animation", meta = (Keywords = ""))
 	static void RefrashAllSkeletallAnimation();
 
 
 	/** Read Or Write Custom Text */
-	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility", meta = (Keywords = ""))
+	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|File", meta = (Keywords = ""))
 	static bool ReadFile(const FString FilePath, FString& ReturnString);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|File", meta = (Keywords = ""))
 	static bool WriteFile(const FString FilePath, const FString ReturnString);
 
+	UFUNCTION(BlueprintPure, Category = "BlueprintUtility|File", meta = (Keywords = ""))
+	static bool IsVaildPath(const FString FilePath);
 
 	/** Get Path */
-	UFUNCTION(BlueprintPure, Category = "BlueprintUtility", meta = (Keywords = ""))
+	UFUNCTION(BlueprintPure, Category = "BlueprintUtility|File", meta = (Keywords = ""))
 	static FString GetGamePath(DirType E);
+
+
+	UFUNCTION(BlueprintPure, meta = (DisplayName = "Explode string", Keywords = "split explode string"), Category = "BlueprintUtility|String")
+	static void String__ExplodeString(TArray<FString>& OutputStrings, FString InputString, FString Separator = ",", int32 limit = 0, bool bTrimElements = false);
 
 
 private:
