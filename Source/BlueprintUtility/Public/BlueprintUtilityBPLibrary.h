@@ -63,6 +63,9 @@ class UBlueprintUtilityBPLibrary : public UBlueprintFunctionLibrary
 
 	static FString GetFullPath(FString FilePath);
 
+	UFUNCTION(BlueprintPure, Category = "BlueprintUtility|Loader", meta = (Keywords = "image png jpg jpeg bmp bitmap ico icon exr icns"))
+	static TArray<FString> LoadTexture2DFromFile_Windows(const FString FileType);
+
 	/** Load Texture2D */
 	UFUNCTION(BlueprintPure, Category = "BlueprintUtility|Loader", meta = (Keywords = "image png jpg jpeg bmp bitmap ico icon exr icns"))
 	static UTexture2D* LoadTexture2DFromFile(const FString& FilePath, bool& IsValid, int32& Width, int32& Height);
@@ -73,8 +76,10 @@ class UBlueprintUtilityBPLibrary : public UBlueprintFunctionLibrary
 
 	/** Load a Sound from a file!  */
 	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|Loader", meta = (Keywords = ""))
-	static class USoundWave* LoadSoundWaveFromFile(const FString& FilePath);
+	static class USoundWave* LoadOggDataFromFile(const FString& FilePath);
 
+	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|Loader", meta = (Keywords = ""))
+	static class USoundWave* LoadWaveDataFromFile(const FString& FilePath);
 
 	/**  Config !! */
 	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|Config", meta = (Keywords = ""))
@@ -110,9 +115,6 @@ class UBlueprintUtilityBPLibrary : public UBlueprintFunctionLibrary
 	UFUNCTION(BlueprintPure, Category = "BlueprintUtility|File", meta = (Keywords = ""))
 	static FString GetGamePath(DirType E);
 
-
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "Explode string", Keywords = "split explode string"), Category = "BlueprintUtility|String")
-	static void String__ExplodeString(TArray<FString>& OutputStrings, FString InputString, FString Separator = ",", int32 limit = 0, bool bTrimElements = false);
 
 
 private:

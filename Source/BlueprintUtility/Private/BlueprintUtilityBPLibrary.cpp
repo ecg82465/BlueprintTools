@@ -11,6 +11,8 @@
 
 //#include "ImageLoader.h"
 
+#include "../Public/FileHelper.h"
+
 #include "Engine/Texture2D.h"
 
 
@@ -82,6 +84,17 @@ static TSharedPtr<IImageWrapper> GetImageWrapperByExtention(const FString InImag
 	return nullptr;
 }
 
+TArray<FString> UBlueprintUtilityBPLibrary::LoadTexture2DFromFile_Windows(const FString FileType)
+{
+
+	FileHelper fileHelper;
+	TArray<FString> selectedFiles;
+
+
+	fileHelper.OpenFileDialog(FileType, selectedFiles);
+
+	return selectedFiles;
+}
 
 UTexture2D* UBlueprintUtilityBPLibrary::LoadTexture2DFromFile(const FString& FilePath,
 	bool& IsValid, int32& Width, int32& Height)
@@ -169,18 +182,63 @@ bool UBlueprintUtilityBPLibrary::ReadOggWaveData(class USoundWave* sw, TArray<ui
 	sw->Duration = info.Duration;
 	sw->RawPCMDataSize = info.SampleDataSize;
 	sw->SetSampleRate(info.SampleRate);
+	sw->RawData  ;
 
 	return false;
 }
 
 bool UBlueprintUtilityBPLibrary::ReadWavWaveData(class USoundWave* sw, TArray<uint8>* rawFile)
 {
-
 	return false;
 }
 
 
-class USoundWave* UBlueprintUtilityBPLibrary::LoadSoundWaveFromFile(const FString& FilePath)
+class USoundWave* UBlueprintUtilityBPLibrary::LoadWaveDataFromFile(const FString& FilePath)
+{
+	USoundWave* sw = NewObject<USoundWave>(USoundWave::StaticClass());
+
+	if (!sw)
+		return nullptr;
+
+	FString FullPath = GetFullPath(FilePath);
+
+	TArray < uint8 > rawFile;
+
+	FFileHelper::LoadFileToArray(rawFile, FullPath.GetCharArray().GetData());
+	FWaveModInfo WaveInfo;
+
+	if (WaveInfo.ReadWaveInfo(rawFile.GetData(), rawFile.Num()))
+	{
+		sw->InvalidateCompressedData();
+
+		sw->RawData.Lock(LOCK_READ_WRITE);
+		void* LockedData = sw->RawData.Realloc(rawFile.Num());
+		FMemory::Memcpy(LockedData, rawFile.GetData(), rawFile.Num());
+		sw->RawData.Unlock();
+
+		int32 DurationDiv = *WaveInfo.pChannels * *WaveInfo.pBitsPerSample * *WaveInfo.pSamplesPerSec;
+		if (DurationDiv)
+		{
+			sw->Duration = *WaveInfo.pWaveDataSize * 8.0f / DurationDiv;
+		}
+		else
+		{
+			sw->Duration = 0.0f;
+		}
+		
+		sw->SetSampleRate(*WaveInfo.pSamplesPerSec);
+		sw->NumChannels = *WaveInfo.pChannels;
+		sw->RawPCMDataSize = WaveInfo.SampleDataSize;
+		sw->SoundGroup = ESoundGroup::SOUNDGROUP_Default;
+	}
+	else {
+		return nullptr;
+	}
+
+	return sw;
+}
+
+class USoundWave* UBlueprintUtilityBPLibrary::LoadOggDataFromFile(const FString& FilePath)
 {
 
 	USoundWave* sw = NewObject<USoundWave>(USoundWave::StaticClass());
@@ -202,10 +260,13 @@ class USoundWave* UBlueprintUtilityBPLibrary::LoadSoundWaveFromFile(const FStrin
 	if (loaded)
 	{
 		FByteBulkData* bulkData = &sw->CompressedFormatData.GetFormat(TEXT("OGG"));
+		//sw->RawData = sw->CompressedFormatData.GetFormat(TEXT("OGG"));
 
 		bulkData->Lock(LOCK_READ_WRITE);
 		FMemory::Memcpy(bulkData->Realloc(rawFile.Num()), rawFile.GetData(), rawFile.Num());
 		bulkData->Unlock();
+		
+		sw->RawData = *bulkData;
 
 		loaded = ReadOggWaveData(sw, &rawFile) == 0 ? true : false;
 	}
@@ -364,80 +425,4 @@ bool UBlueprintUtilityBPLibrary::ReadCustomPathConfig(const FString&FilePath, co
 	 }
 
 	 return true;
- }
-
-
- void UBlueprintUtilityBPLibrary::String__ExplodeString(TArray<FString>& OutputStrings, FString InputString, FString Separator, int32 limit, bool bTrimElements)
- {
-	 OutputStrings.Empty();
-	 //~~~~~~~~~~~
-
-	 if (InputString.Len() > 0 && Separator.Len() > 0) {
-		 int32 StringIndex = 0;
-		 int32 SeparatorIndex = 0;
-
-		 FString Section = "";
-		 FString Extra = "";
-
-		 int32 PartialMatchStart = -1;
-
-		 while (StringIndex < InputString.Len()) {
-
-			 if (InputString[StringIndex] == Separator[SeparatorIndex]) {
-				 if (SeparatorIndex == 0) {
-					 //A new partial match has started.
-					 PartialMatchStart = StringIndex;
-				 }
-				 Extra.AppendChar(InputString[StringIndex]);
-				 if (SeparatorIndex == (Separator.Len() - 1)) {
-					 //We have matched the entire separator.
-					 SeparatorIndex = 0;
-					 PartialMatchStart = -1;
-					 if (bTrimElements == true) {
-						 OutputStrings.Add(FString(Section).Trim().TrimTrailing());
-					 }
-					 else {
-						 OutputStrings.Add(FString(Section));
-					 }
-
-					 //if we have reached the limit, stop.
-					 if (limit > 0 && OutputStrings.Num() >= limit)
-					 {
-						 return;
-						 //~~~~
-					 }
-
-					 Extra.Empty();
-					 Section.Empty();
-				 }
-				 else {
-					 ++SeparatorIndex;
-				 }
-			 }
-			 else {
-				 //Not matched.
-				 //We should revert back to PartialMatchStart+1 (if there was a partial match) and clear away extra.
-				 if (PartialMatchStart >= 0) {
-					 StringIndex = PartialMatchStart;
-					 PartialMatchStart = -1;
-					 Extra.Empty();
-					 SeparatorIndex = 0;
-				 }
-				 Section.AppendChar(InputString[StringIndex]);
-			 }
-
-			 ++StringIndex;
-		 }
-
-		 //If there is anything left in Section or Extra. They should be added as a new entry.
-		 if (bTrimElements == true) {
-			 OutputStrings.Add(FString(Section + Extra).Trim().TrimTrailing());
-		 }
-		 else {
-			 OutputStrings.Add(FString(Section + Extra));
-		 }
-
-		 Section.Empty();
-		 Extra.Empty();
-	 }
  }

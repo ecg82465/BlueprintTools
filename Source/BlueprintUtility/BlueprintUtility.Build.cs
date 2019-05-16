@@ -7,8 +7,10 @@ public class BlueprintUtility : ModuleRules
 	public BlueprintUtility(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-		
-		PublicIncludePaths.AddRange(
+
+        //PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+
+        PublicIncludePaths.AddRange(
 			new string[] {
 				// ... add public include paths required here ...
 			}
@@ -38,9 +40,10 @@ public class BlueprintUtility : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
+                "UMG",
 
                 "ImageWrapper",
-
+                
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
