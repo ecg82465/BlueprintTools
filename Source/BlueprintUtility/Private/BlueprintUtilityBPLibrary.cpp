@@ -1,4 +1,4 @@
-// Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
+// Copyright  ECGGGGGG . All Rights Reserved.
 
 #include "BlueprintUtilityBPLibrary.h"
 #include "BlueprintUtility.h"
@@ -111,7 +111,7 @@ UTexture2D* UBlueprintUtilityBPLibrary::LoadTexture2DFromFile(const FString& Fil
 	IsValid = false;
 	UTexture2D* LoadedT2D = NULL;
 
-	//UE_LOG(LogTemp, Warning, TEXT("FinalPath %s"), *FullFilePath);
+	//
 
 	//IImageWrapperModule& ImageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>(FName("ImageWrapper"));
 	TSharedPtr<IImageWrapper> ImageWrapper = GetImageWrapperByExtention(FullFilePath);
@@ -156,10 +156,10 @@ UTexture2D* UBlueprintUtilityBPLibrary::LoadTexture2DFromFile(const FString& Fil
 }
 
 
-UImageLoader* UBlueprintUtilityBPLibrary::LoadTexture2DFromFile_Async(UObject* Outer, const FString& FilePath)
+UImageLoader* UBlueprintUtilityBPLibrary::LoadTexture2DFromFile_Async(const FString& FilePath)
 {
 	UImageLoader* Loader = NewObject<UImageLoader>();
-	Loader->LoadImageAsync(Outer,FilePath);
+	Loader->LoadImageAsync(FilePath);
 
 	return Loader;
 }
@@ -334,8 +334,7 @@ bool UBlueprintUtilityBPLibrary::ReadCustomPathConfig(const FString&FilePath, co
 
  void UBlueprintUtilityBPLibrary::WriteCustomPathConfig(const FString&FilePath, const FString& SectionName, const FString& ValueName, const FString &WriteString)
 {
-	FString FullPath 
-= GetFullPath(FilePath);
+	FString FullPath = GetFullPath(FilePath);
 
 	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
 
@@ -395,6 +394,25 @@ bool UBlueprintUtilityBPLibrary::ReadCustomPathConfig(const FString&FilePath, co
 	 return Sucess;
  }
 
+ bool UBlueprintUtilityBPLibrary::DeleteFile(const FString FilePath)
+ {
+	 FString FullPath = GetFullPath(FilePath);
+
+	 IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+	 if (PlatformFile.DeleteFile(*FullPath))
+	 {
+		 UE_LOG(LogTemp, Warning, TEXT("deleteFile: Delete the flie successfully!"));
+	 
+		 return true;
+	 }
+	 else
+	 {
+		 UE_LOG(LogTemp, Warning, TEXT("deleteFile: Not delete the flie!"));
+		 
+		 return false;
+	 }
+
+ }
 
  FString UBlueprintUtilityBPLibrary::GetGamePath(DirType E)
  {
@@ -425,4 +443,23 @@ bool UBlueprintUtilityBPLibrary::ReadCustomPathConfig(const FString&FilePath, co
 	 }
 
 	 return true;
+ }
+ AExeActor* UBlueprintUtilityBPLibrary::OpenExe(UObject* SomeInWorldObject, const FString Path, const FString Args)
+ {
+	 UWorld* world = SomeInWorldObject->GetWorld();
+
+	 FVector pos(150, 0, 20);
+
+	 AExeActor *Temp = world->SpawnActor<AExeActor>(pos, FRotator::ZeroRotator); ;
+
+	 //AExeActor *Temp = NewObject<AExeActor>();
+	 //EE->GetWorld()->AddNetworkActor(Temp);
+	 Temp->SetActorTickEnabled(true);
+	 Temp->ActorToWorld();
+
+	 Temp->CheckProc = FPlatformProcess::CreateProc(*Path, *Args, true, false, false, nullptr, 0, nullptr, nullptr);
+
+
+	 return Temp;
+
  }

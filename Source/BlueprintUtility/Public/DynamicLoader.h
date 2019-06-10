@@ -9,7 +9,7 @@
 #include "UObject/NoExportTypes.h"
 
 #include "PixelFormat.h"
-#include "ImageLoader.generated.h"
+#include "DynamicLoader.generated.h"
 
 // Forward declarations
 class UTexture2D;
@@ -33,14 +33,14 @@ public:
 	Loads an image file from disk into a texture on a worker thread. This will not block the calling thread.
 	@return A future object which will hold the image texture once loading is done.
 	*/
-	static TFuture<UTexture2D*> LoadImageFromDiskAsync(UObject* Outer, const FString& ImagePath, TFunction<void()> CompletionCallback);
+	static TFuture<UTexture2D*> LoadImageFromDiskAsync(const FString& ImagePath, TFunction<void()> CompletionCallback);
 
 	/**
 	Loads an image file from disk into a texture. This will block the calling thread until completed.
 	@return A texture created from the loaded image file.
 	*/
 	UFUNCTION(BlueprintCallable, Category = ImageLoader, meta = (HidePin = "Outer", DefaultToSelf = "Outer"))
-		static UTexture2D* LoadImageFromDisk(UObject* Outer, const FString& ImagePath);
+		static UTexture2D* LoadImageFromDisk(const FString& ImagePath);
 
 public:
 
@@ -63,7 +63,7 @@ public:
 
 
 	/** Helper function that initiates the loading operation and fires the event when loading is done. */
-	void LoadImageAsync(UObject* Outer, const FString& ImagePath);
+	void LoadImageAsync(const FString& ImagePath);
 
 	/** Helper function to dynamically create a new texture from raw pixel data. */
 	//static UTexture2D* CreateTexture(UObject* Outer, const TArray<uint8>& PixelData, int32 InSizeX, int32 InSizeY, EPixelFormat PixelFormat = EPixelFormat::PF_B8G8R8A8, FName BaseName = NAME_None);
@@ -78,5 +78,38 @@ private:
 	/** Holds the future value which represents the asynchronous loading operation. */
 	TFuture<UTexture2D*> Future;
 
+
+};
+
+UCLASS()
+class AExeActor : public AActor
+{
+	GENERATED_BODY()
+
+public:
+	AExeActor();
+
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+public:
+
+	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "FFMPEGPort sample test testing"), Category = "FFMPEGPortTesting")
+		bool Getstat();
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnProcShutdown, bool, IsOver);
+
+	UPROPERTY(BlueprintAssignable, Category = FFMPEGPort, meta = (AllowPrivateAccess = true))
+		FOnProcShutdown ProcShutdown;
+
+public:
+
+	bool bisShutDown = false;
+
+	FProcHandle CheckProc;
 
 };
