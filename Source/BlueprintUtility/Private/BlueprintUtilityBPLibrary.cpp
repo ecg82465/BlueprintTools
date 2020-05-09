@@ -14,6 +14,8 @@
 #include "../Public/FileHelper.h"
 
 #include "Engine/Texture2D.h"
+#include "HighResScreenshot.h"
+#include "Kismet/KismetRenderingLibrary.h"
 
 
 
@@ -123,6 +125,9 @@ UTexture2D* UBlueprintUtilityBPLibrary::LoadTexture2DFromFile(const FString& Fil
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	//Create T2D!
+
+	
+
 	if (ImageWrapper.IsValid() && ImageWrapper->SetCompressed(RawFileData.GetData(), RawFileData.Num()))
 	{
 		const TArray<uint8>* UncompressedBGRA = NULL;
@@ -156,21 +161,23 @@ UTexture2D* UBlueprintUtilityBPLibrary::LoadTexture2DFromFile(const FString& Fil
 }
 
 
-UImageLoader* UBlueprintUtilityBPLibrary::LoadTexture2DFromFile_Async(const FString& FilePath)
-{
-	UImageLoader* Loader = NewObject<UImageLoader>();
-	Loader->LoadImageAsync(FilePath);
+//UImageLoader* UBlueprintUtilityBPLibrary::LoadTexture2DFromFile_Async(const FString& FilePath)
+//{
+//	UImageLoader* Loader = NewObject<UImageLoader>();
+//	Loader->LoadImageAsync(FilePath);
+//
+//	return Loader;
+//}
 
-	return Loader;
-}
 
 
 
 bool UBlueprintUtilityBPLibrary::ReadOggWaveData(class USoundWave* sw, TArray<uint8>* rawFile)
 {
 	FSoundQualityInfo info;
-	FVorbisAudioInfo vorbis_obj;
-	if (!vorbis_obj.ReadCompressedInfo(rawFile->GetData(), rawFile->Num(), &info))
+	FVorbisAudioInfo vorbisObj ;
+
+	if (!vorbisObj.ReadCompressedInfo(rawFile->GetData(), rawFile->Num(), &info))
 	{
 		//Debug("Can't load header");
 		return true;
@@ -413,6 +420,40 @@ bool UBlueprintUtilityBPLibrary::ReadCustomPathConfig(const FString&FilePath, co
 	 }
 
  }
+
+ bool UBlueprintUtilityBPLibrary::CopyFile(const FString FilePath, const FString ToPath)
+ {
+	 IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+	 return PlatformFile.CopyFile(*ToPath, *FilePath);
+
+ }
+
+ bool UBlueprintUtilityBPLibrary::Texture2d2PNG( UTextureRenderTarget2D* TextureRenderTarget, const FString& FilePath)
+{
+	 FTextureRenderTargetResource* rtResource = TextureRenderTarget->GameThread_GetRenderTargetResource();
+	 FReadSurfaceDataFlags readPixelFlags(RCM_UNorm);
+
+	 TArray<FColor> outBMP;
+
+	 for (FColor& color : outBMP)
+	 {
+		 color.A = 255;
+	 }
+	 outBMP.AddUninitialized(TextureRenderTarget->GetSurfaceWidth() * TextureRenderTarget->GetSurfaceHeight());
+	 rtResource->ReadPixels(outBMP, readPixelFlags);
+
+	 FIntPoint destSize(TextureRenderTarget->GetSurfaceWidth(), TextureRenderTarget->GetSurfaceHeight());
+	 TArray<uint8> CompressedBitmap;
+	 FImageUtils::CompressImageArray(destSize.X, destSize.Y, outBMP, CompressedBitmap);
+	 bool imageSavedOk = FFileHelper::SaveArrayToFile(CompressedBitmap, *FilePath);
+
+	 return imageSavedOk;
+
+
+
+}
+
+
 
  FString UBlueprintUtilityBPLibrary::GetGamePath(DirType E)
  {

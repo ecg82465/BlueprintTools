@@ -63,8 +63,8 @@ class UBlueprintUtilityBPLibrary : public UBlueprintFunctionLibrary
 	static UTexture2D* LoadTexture2DFromFile(const FString& FilePath, bool& IsValid, int32& Width, int32& Height);
 
 	/** Load Texture2D No Blocking Game Logic */
-	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|Loader", meta = (Keywords = "image png jpg jpeg bmp bitmap ico icon exr icns"))
-	static UImageLoader* LoadTexture2DFromFile_Async( const FString& FilePath);
+	//UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|Loader", meta = (Keywords = "image png jpg jpeg bmp bitmap ico icon exr icns"))
+	//static UImageLoader* LoadTexture2DFromFile_Async( const FString& FilePath);
 
 	/** Load a Sound from a file!  */
 	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|Loader", meta = (Keywords = ""))
@@ -105,10 +105,18 @@ class UBlueprintUtilityBPLibrary : public UBlueprintFunctionLibrary
 	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|File", meta = (Keywords = ""))
 	static bool DeleteFile(const FString FilePath);
 
+	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|File", meta = (Keywords = ""))
+	static bool CopyFile (const FString FilePath, const FString ToPath);
+
+	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|File", meta = (Keywords = ""))
+	static bool Texture2d2PNG(UTextureRenderTarget2D* TextureRenderTarget, const FString& FilePath);
+
+	
+
+	/** Get Path */
 	UFUNCTION(BlueprintPure, Category = "BlueprintUtility|File", meta = (Keywords = ""))
 	static bool IsVaildPath(const FString FilePath);
 
-	/** Get Path */
 	UFUNCTION(BlueprintPure, Category = "BlueprintUtility|File", meta = (Keywords = ""))
 	static FString GetGamePath(DirType E);
 
@@ -124,3 +132,4 @@ private:
 	static bool ReadOggWaveData(USoundWave* sw, TArray<uint8>* rawFile);
 
 };
+ 

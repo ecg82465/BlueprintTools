@@ -55,5 +55,8 @@ public class BlueprintUtility : ModuleRules
 				// ... add any modules that your module loads dynamically here ...
 			}
 			);
+
+		PublicDefinitions.Add(" WITH_OGGVORBIS");
+
 	}
 }
