@@ -11,7 +11,7 @@
 
 //#include "ImageLoader.h"
 
-#include "../Public/FileHelper.h"
+//#include "../Public/FileHelper.h"
 
 #include "Engine/Texture2D.h"
 #include "HighResScreenshot.h"
@@ -85,18 +85,18 @@ static TSharedPtr<IImageWrapper> GetImageWrapperByExtention(const FString InImag
 	}
 	return nullptr;
 }
-
-TArray<FString> UBlueprintUtilityBPLibrary::LoadTexture2DFromFile_Windows(const FString FileType)
-{
-
-	FileHelper fileHelper;
-	TArray<FString> selectedFiles;
-
-
-	fileHelper.OpenFileDialog(FileType, selectedFiles);
-
-	return selectedFiles;
-}
+//
+//TArray<FString> UBlueprintUtilityBPLibrary::LoadTexture2DFromFile_Windows(const FString FileType)
+//{
+//
+//	//FileHelper fileHelper;
+//	TArray<FString> selectedFiles;
+//
+//
+//	//fileHelper.OpenFileDialog(FileType, selectedFiles);
+//
+//	return selectedFiles;
+//}
 
 UTexture2D* UBlueprintUtilityBPLibrary::LoadTexture2DFromFile(const FString& FilePath,
 	bool& IsValid, int32& Width, int32& Height)
@@ -161,13 +161,13 @@ UTexture2D* UBlueprintUtilityBPLibrary::LoadTexture2DFromFile(const FString& Fil
 }
 
 
-//UImageLoader* UBlueprintUtilityBPLibrary::LoadTexture2DFromFile_Async(const FString& FilePath)
-//{
-//	UImageLoader* Loader = NewObject<UImageLoader>();
-//	Loader->LoadImageAsync(FilePath);
-//
-//	return Loader;
-//}
+UImageLoader* UBlueprintUtilityBPLibrary::LoadTexture2DFromFile_Async(const FString& FilePath,const FString& ID)
+{
+	UImageLoader* Loader = NewObject<UImageLoader>();
+	Loader->LoadImageAsync(FilePath,ID);
+
+	return Loader;
+}
 
 
 
@@ -504,3 +504,28 @@ bool UBlueprintUtilityBPLibrary::ReadCustomPathConfig(const FString&FilePath, co
 	 return Temp;
 
  }
+
+ void UBlueprintUtilityBPLibrary::GenColors(int Length, const FColor color, TArray<FColor>& OuterColor)
+ {
+	 TArray<FColor> setColor;
+	 for (int i=0;i<Length;i++)
+	 {
+		 setColor.Add(color);
+		 
+	 }
+
+	 OuterColor = setColor;
+ }
+
+ void UBlueprintUtilityBPLibrary::UVtimes(FVector2D tims, const TArray<FVector2D> inputUV, TArray<FVector2D>& OuterColor)
+ {
+
+	 OuterColor.Reset(inputUV.Num());
+	 for (const FVector2D& tan : inputUV)
+	 {
+		 OuterColor.Add(tan*tims);
+	 }
+
+	 
+ }
+ 

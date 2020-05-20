@@ -55,16 +55,16 @@ class UBlueprintUtilityBPLibrary : public UBlueprintFunctionLibrary
 
 	/*                   RuntimeLoader                    */
 
-	UFUNCTION(BlueprintPure, Category = "BlueprintUtility|Loader", meta = (Keywords = "image png jpg jpeg bmp bitmap ico icon exr icns"))
-	static TArray<FString> LoadTexture2DFromFile_Windows(const FString FileType);
+	//UFUNCTION(BlueprintPure, Category = "BlueprintUtility|Loader", meta = (Keywords = "image png jpg jpeg bmp bitmap ico icon exr icns"))
+	//static TArray<FString> LoadTexture2DFromFile_Windows(const FString FileType);
 
 	/** Load Texture2D */
 	UFUNCTION(BlueprintPure, Category = "BlueprintUtility|Loader", meta = (Keywords = "image png jpg jpeg bmp bitmap ico icon exr icns"))
 	static UTexture2D* LoadTexture2DFromFile(const FString& FilePath, bool& IsValid, int32& Width, int32& Height);
 
 	/** Load Texture2D No Blocking Game Logic */
-	//UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|Loader", meta = (Keywords = "image png jpg jpeg bmp bitmap ico icon exr icns"))
-	//static UImageLoader* LoadTexture2DFromFile_Async( const FString& FilePath);
+	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|Loader", meta = (Keywords = "image png jpg jpeg bmp bitmap ico icon exr icns"))
+	static UImageLoader* LoadTexture2DFromFile_Async( const FString& FilePath,const FString& ID);
 
 	/** Load a Sound from a file!  */
 	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|Loader", meta = (Keywords = ""))
@@ -123,6 +123,13 @@ class UBlueprintUtilityBPLibrary : public UBlueprintFunctionLibrary
 	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|OS", meta = (Keywords = "exe"))
 	static AExeActor* OpenExe(UObject* SomeInWorldObject,const FString Path,const FString Args);
 
+
+
+	UFUNCTION(BlueprintPure, Category = "BlueprintUtility|Functions", meta = (Keywords = "color"))
+	static void GenColors(int Length, const FColor color, TArray<FColor>& OuterColor);
+
+	UFUNCTION(BlueprintPure, Category = "BlueprintUtility|Functions", meta = (Keywords = "color"))
+		static void UVtimes(FVector2D tims,const TArray<FVector2D> inputUV, TArray<FVector2D>& OuterUV);
 
 
 private:

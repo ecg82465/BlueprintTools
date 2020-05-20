@@ -42,6 +42,7 @@ public class BlueprintUtility : ModuleRules
 				"SlateCore",
                 "UMG",
 
+				"RenderCore",
                 "ImageWrapper",
                 
 				// ... add private dependencies that you statically link with here ...	
