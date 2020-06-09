@@ -87,7 +87,11 @@ class UBlueprintUtilityBPLibrary : public UBlueprintFunctionLibrary
 	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|Config", meta = (Keywords = ""))
 	static void WriteCustomPathConfig(const FString&FilePath, const FString& SectionName, const FString& ValueName,const FString &WriteString);
 
-	
+	UFUNCTION(BlueprintPure, Category = "BlueprintUtility|Config", meta = (Keywords = ""))
+	static bool IsEditorMode( );
+
+
+
 	/** RefrashAllSkeletal Trnasfrom In This Frame (Fix Animation Dither Error)*/
 
 	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|Animation", meta = (Keywords = ""))
@@ -103,7 +107,13 @@ class UBlueprintUtilityBPLibrary : public UBlueprintFunctionLibrary
 	static bool WriteFile(const FString FilePath, const FString ReturnString);
 
 	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|File", meta = (Keywords = ""))
+    static bool WriteFileByte(TArray<uint8> bytes, const FString FilePath);
+	
+	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|File", meta = (Keywords = ""))
 	static bool DeleteFile(const FString FilePath);
+
+	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|File", meta = (Keywords = ""))
+	static bool DeleteFiles(const FString FilePath);
 
 	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|File", meta = (Keywords = ""))
 	static bool CopyFile (const FString FilePath, const FString ToPath);

@@ -401,11 +401,27 @@ bool UBlueprintUtilityBPLibrary::ReadCustomPathConfig(const FString&FilePath, co
 	 return Sucess;
  }
 
+ bool UBlueprintUtilityBPLibrary::WriteFileByte(TArray<uint8> bytes, const FString FilePath)
+ {
+	 FString FullPath = GetFullPath(FilePath);
+
+	 bool Sucess;
+	 Sucess = FFileHelper::SaveArrayToFile(bytes, *FilePath);
+
+	
+
+	 return Sucess;
+ }
+
+
  bool UBlueprintUtilityBPLibrary::DeleteFile(const FString FilePath)
  {
 	 FString FullPath = GetFullPath(FilePath);
 
 	 IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+
+	 
+
 	 if (PlatformFile.DeleteFile(*FullPath))
 	 {
 		 UE_LOG(LogTemp, Warning, TEXT("deleteFile: Delete the flie successfully!"));
@@ -421,9 +437,38 @@ bool UBlueprintUtilityBPLibrary::ReadCustomPathConfig(const FString&FilePath, co
 
  }
 
+
+ bool UBlueprintUtilityBPLibrary::DeleteFiles(const FString FilePath)
+ {
+	 FString FullPath = GetFullPath(FilePath);
+
+	 IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+
+
+
+	 if (PlatformFile.DeleteDirectoryRecursively(*FullPath))
+	 {
+		 UE_LOG(LogTemp, Warning, TEXT("deleteFile: Delete the flie successfully!"));
+
+		 return true;
+	 }
+	 else
+	 {
+		 UE_LOG(LogTemp, Warning, TEXT("deleteFile: Not delete the flie!"));
+
+		 return false;
+	 }
+
+ }
+
+
+
  bool UBlueprintUtilityBPLibrary::CopyFile(const FString FilePath, const FString ToPath)
  {
 	 IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+
+	
+
 	 return PlatformFile.CopyFile(*ToPath, *FilePath);
 
  }
@@ -529,3 +574,15 @@ bool UBlueprintUtilityBPLibrary::ReadCustomPathConfig(const FString&FilePath, co
 	 
  }
  
+ bool UBlueprintUtilityBPLibrary::IsEditorMode()
+ {
+
+#if WITH_EDITOR
+
+	 return true;
+#endif
+	 
+	 return false;
+
+ }
+
