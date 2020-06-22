@@ -130,7 +130,7 @@ UTexture2D* UBlueprintUtilityBPLibrary::LoadTexture2DFromFile(const FString& Fil
 
 	if (ImageWrapper.IsValid() && ImageWrapper->SetCompressed(RawFileData.GetData(), RawFileData.Num()))
 	{
-		const TArray<uint8>* UncompressedBGRA = NULL;
+		TArray<uint8> UncompressedBGRA;
 		if (ImageWrapper->GetRaw(ERGBFormat::BGRA, 8, UncompressedBGRA))
 		{
 
