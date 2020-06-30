@@ -1,4 +1,4 @@
-// Copyright  ECGGGGGG . All Rights Reserved.
+// Copyright  ECG . All Rights Reserved.
 
 #pragma once
 

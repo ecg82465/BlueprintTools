@@ -1,4 +1,4 @@
-// Copyright  ECGGGGGG . All Rights Reserved.
+// Copyright  ECG . All Rights Reserved.
 
 #include "BlueprintUtilityBPLibrary.h"
 #include "BlueprintUtility.h"
