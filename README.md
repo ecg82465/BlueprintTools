@@ -1,8 +1,8 @@
 # UE4 Plugins of BluePrint Functions
 
-It provides Some Funtion 
+It provides features not found in the engine blueprint
 
-Like Runtime Load Texture Or .ogg Sound
+Like Runtime Load Texture Or .wav Sound ,config ,open exe ....
 
 When I develop new features 
 I Will Update
