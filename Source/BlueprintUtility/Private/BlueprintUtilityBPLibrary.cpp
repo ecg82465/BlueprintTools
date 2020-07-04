@@ -85,18 +85,7 @@ static TSharedPtr<IImageWrapper> GetImageWrapperByExtention(const FString InImag
 	}
 	return nullptr;
 }
-//
-//TArray<FString> UBlueprintUtilityBPLibrary::LoadTexture2DFromFile_Windows(const FString FileType)
-//{
-//
-//	//FileHelper fileHelper;
-//	TArray<FString> selectedFiles;
-//
-//
-//	//fileHelper.OpenFileDialog(FileType, selectedFiles);
-//
-//	return selectedFiles;
-//}
+
 
 UTexture2D* UBlueprintUtilityBPLibrary::LoadTexture2DFromFile(const FString& FilePath,
 	bool& IsValid, int32& Width, int32& Height)
@@ -113,20 +102,11 @@ UTexture2D* UBlueprintUtilityBPLibrary::LoadTexture2DFromFile(const FString& Fil
 	IsValid = false;
 	UTexture2D* LoadedT2D = NULL;
 
-	//
 
-	//IImageWrapperModule& ImageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>(FName("ImageWrapper"));
 	TSharedPtr<IImageWrapper> ImageWrapper = GetImageWrapperByExtention(FullFilePath);
 	
-	//Load From File
 	TArray<uint8> RawFileData;
 	if (!FFileHelper::LoadFileToArray(RawFileData, *FullFilePath, 0)) return NULL ;
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	//Create T2D!
-
-	
 
 	if (ImageWrapper.IsValid() && ImageWrapper->SetCompressed(RawFileData.GetData(), RawFileData.Num()))
 	{
@@ -136,28 +116,22 @@ UTexture2D* UBlueprintUtilityBPLibrary::LoadTexture2DFromFile(const FString& Fil
 
 			LoadedT2D = UTexture2D::CreateTransient(ImageWrapper->GetWidth(), ImageWrapper->GetHeight(), PF_B8G8R8A8);
 
-			//Valid?
 			if (!LoadedT2D) return NULL;
-			//~~~~~~~~~~~~~~
 
-			//Out!
 			Width = ImageWrapper->GetWidth();
 			Height = ImageWrapper->GetHeight();
 
-			//Copy!
 			void* TextureData = LoadedT2D->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_WRITE);
 			FMemory::Memcpy(TextureData, UncompressedBGRA.GetData(), UncompressedBGRA.Num());
 			LoadedT2D->PlatformData->Mips[0].BulkData.Unlock();
 
-			//Update!
 			LoadedT2D->UpdateResource();
 		}
 	}
 
-	// Success!
 	IsValid = true;
 	return LoadedT2D;
-	//return NULL;
+
 }
 
 

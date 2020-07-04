@@ -55,9 +55,6 @@ class UBlueprintUtilityBPLibrary : public UBlueprintFunctionLibrary
 
 	/*                   RuntimeLoader                    */
 
-	//UFUNCTION(BlueprintPure, Category = "BlueprintUtility|Loader", meta = (Keywords = "image png jpg jpeg bmp bitmap ico icon exr icns"))
-	//static TArray<FString> LoadTexture2DFromFile_Windows(const FString FileType);
-
 	/** Load Texture2D */
 	UFUNCTION(BlueprintPure, Category = "BlueprintUtility|Loader", meta = (Keywords = "image png jpg jpeg bmp bitmap ico icon exr icns"))
 	static UTexture2D* LoadTexture2DFromFile(const FString& FilePath, bool& IsValid, int32& Width, int32& Height);
