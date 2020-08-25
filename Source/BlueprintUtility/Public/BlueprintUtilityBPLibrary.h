@@ -130,13 +130,14 @@ class UBlueprintUtilityBPLibrary : public UBlueprintFunctionLibrary
 	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|OS", meta = (Keywords = "exe"))
 	static AExeActor* OpenExe(UObject* SomeInWorldObject,const FString Path,const FString Args);
 
-
+	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|Functions", meta = (Keywords = "MD5"))
+	static FString GenMD5(FString InputString);
 
 	UFUNCTION(BlueprintPure, Category = "BlueprintUtility|Functions", meta = (Keywords = "color"))
 	static void GenColors(int Length, const FColor color, TArray<FColor>& OuterColor);
 
 	UFUNCTION(BlueprintPure, Category = "BlueprintUtility|Functions", meta = (Keywords = "color"))
-		static void UVtimes(FVector2D tims,const TArray<FVector2D> inputUV, TArray<FVector2D>& OuterUV);
+	static void UVtimes(FVector2D tims,const TArray<FVector2D> inputUV, TArray<FVector2D>& OuterUV);
 
 
 private:

@@ -560,3 +560,20 @@ bool UBlueprintUtilityBPLibrary::ReadCustomPathConfig(const FString&FilePath, co
 
  }
 
+
+
+
+ FString UBlueprintUtilityBPLibrary::GenMD5(FString inputstring)
+ {
+	 FTCHARToUTF8 EchoStrUtf8(*inputstring);
+
+	 int32 DestLen = EchoStrUtf8.Length();
+
+
+	 FString RST = FMD5::HashBytes((unsigned char*)TCHAR_TO_UTF8(*inputstring), DestLen);
+	
+
+	 return RST;
+
+	 //return FMD5::HashAnsiString(*inputstring);
+ }
