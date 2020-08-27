@@ -577,3 +577,24 @@ bool UBlueprintUtilityBPLibrary::ReadCustomPathConfig(const FString&FilePath, co
 
 	 //return FMD5::HashAnsiString(*inputstring);
  }
+
+
+ bool UBlueprintUtilityBPLibrary::CheckActorInView(UPrimitiveComponent* actorComp,float checktime)
+ {
+
+	 
+
+	 float c = actorComp->GetLastRenderTimeOnScreen();
+
+	 float d = actorComp->GetWorld()->GetTimeSeconds();
+
+	 UE_LOG(LogTemp, Warning, TEXT("last render time :%f    Game Time :%f"),c,d);
+
+	 if (d-c >=checktime)
+	 {
+		 return false;
+	 }
+
+	 return true;
+
+ }
