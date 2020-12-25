@@ -144,7 +144,42 @@ UImageLoader* UBlueprintUtilityBPLibrary::LoadTexture2DFromFile_Async(const FStr
 }
 
 
+UTexture2D* UBlueprintUtilityBPLibrary::BytesToTexture2d(const TArray<uint8> bytes)
+{
 
+	UTexture2D* LoadedT2D = NULL;
+
+	IImageWrapperModule& ImageWrapperModule = FModuleManager::Get().LoadModuleChecked<IImageWrapperModule>(FName("ImageWrapper"));
+	EImageFormat Format = ImageWrapperModule.DetectImageFormat(bytes.GetData(), bytes.Num());
+	TSharedPtr<IImageWrapper> ImageWrapper = ImageWrapperModule.CreateImageWrapper(Format);
+
+
+	if (!ImageWrapper.IsValid())
+	{
+		return nullptr;
+	}
+
+	if (ImageWrapper.IsValid() && ImageWrapper->SetCompressed(bytes.GetData(), bytes.Num()))
+	{
+		TArray<uint8> UncompressedBGRA;
+		if (ImageWrapper->GetRaw(ERGBFormat::BGRA, 8, UncompressedBGRA))
+		{
+
+			LoadedT2D = UTexture2D::CreateTransient(ImageWrapper->GetWidth(), ImageWrapper->GetHeight(), PF_B8G8R8A8);
+
+			if (!LoadedT2D) return NULL;
+
+			void* TextureData = LoadedT2D->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_WRITE);
+			FMemory::Memcpy(TextureData, UncompressedBGRA.GetData(), UncompressedBGRA.Num());
+			LoadedT2D->PlatformData->Mips[0].BulkData.Unlock();
+
+			LoadedT2D->UpdateResource();
+		}
+	}
+
+	return LoadedT2D;
+
+}
 
 bool UBlueprintUtilityBPLibrary::ReadOggWaveData(class USoundWave* sw, TArray<uint8>* rawFile)
 {
@@ -260,12 +295,12 @@ class USoundWave* UBlueprintUtilityBPLibrary::LoadOggDataFromFile(const FString&
 }
 
 
-void UBlueprintUtilityBPLibrary::ReadConfig(const FString& SectionName, const FString& ValueName, FString &ReturnValue)
+void UBlueprintUtilityBPLibrary::ReadConfig(const FString& SectionName, const FString& ValueName, bool& succeed, FString &ReturnValue)
 {
 
 	//GConfig->Flush(true, GGameIni);
 
-	bool succeed = false;
+	//bool succeed = false;
 
 	 succeed = GConfig->GetString(
 		*SectionName,
@@ -588,7 +623,7 @@ bool UBlueprintUtilityBPLibrary::ReadCustomPathConfig(const FString&FilePath, co
 
 	 float d = actorComp->GetWorld()->GetTimeSeconds();
 
-	 UE_LOG(LogTemp, Warning, TEXT("last render time :%f    Game Time :%f"),c,d);
+	 //UE_LOG(LogTemp, Warning, TEXT("last render time :%f    Game Time :%f"),c,d);
 
 	 if (d-c >=checktime)
 	 {
@@ -597,4 +632,12 @@ bool UBlueprintUtilityBPLibrary::ReadCustomPathConfig(const FString&FilePath, co
 
 	 return true;
 
+ }
+
+ FString UBlueprintUtilityBPLibrary::GetFileNameFromBytes(const TArray<uint8> bytes)
+ {
+
+
+
+	 return "heelo";
  }

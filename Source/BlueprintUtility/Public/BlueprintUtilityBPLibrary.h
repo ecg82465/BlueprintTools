@@ -63,6 +63,9 @@ class UBlueprintUtilityBPLibrary : public UBlueprintFunctionLibrary
 	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|Loader", meta = (Keywords = "image png jpg jpeg bmp bitmap ico icon exr icns"))
 	static UImageLoader* LoadTexture2DFromFile_Async( const FString& FilePath,const FString& ID);
 
+	UFUNCTION(BlueprintPure, Category = "BlueprintUtility|Loader", meta = (Keywords = "image png jpg jpeg bmp bitmap ico icon exr icns"))
+	static UTexture2D* BytesToTexture2d(const TArray<uint8> bytes);
+
 	/** Load a Sound from a file!  */
 	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|Loader", meta = (Keywords = ""))
 	static class USoundWave* LoadOggDataFromFile(const FString& FilePath);
@@ -73,7 +76,7 @@ class UBlueprintUtilityBPLibrary : public UBlueprintFunctionLibrary
 	/**                  Config                           */
 
 	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|Config", meta = (Keywords = ""))
-	static void ReadConfig(const FString& SectionName,const FString& ValueName, FString &ReturnValue);
+	static void ReadConfig(const FString& SectionName,const FString& ValueName, bool &succeed, FString &ReturnValue);
 
 	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|Config", meta = (Keywords = ""))
 	static void WriteConfig(const FString& SectionName, const FString& ValueName, const FString &ReturnValue);
@@ -134,6 +137,9 @@ class UBlueprintUtilityBPLibrary : public UBlueprintFunctionLibrary
 	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|Functions", meta = (Keywords = "MD5"))
 	static FString GenMD5(FString InputString);
 
+
+	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|OS", meta = (Keywords = "exe"))
+    static FString GetFileNameFromBytes(const TArray<uint8> bytes);
 
 	UFUNCTION(BlueprintCallable, Category = "BlueprintUtility|Functions", meta = (Keywords = "View"))
 	static bool CheckActorInView(UPrimitiveComponent* actorComp,float checktime);
